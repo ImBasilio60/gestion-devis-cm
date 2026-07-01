@@ -1,8 +1,18 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import Home from "./pages/Home";
-import Contact from "./pages/Contact";
-import Devis from "./pages/Devis";
+
+const Home = lazy(() => import("./pages/Home"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Devis = lazy(() => import("./pages/Devis"));
+
+function Fallback() {
+  return (
+    <div className="h-screen flex items-center justify-center bg-gray-50">
+      <div className="w-8 h-8 border-4 border-orange/30 border-t-orange rounded-full animate-spin" />
+    </div>
+  );
+}
 
 export default function App() {
   const location = useLocation();
@@ -17,11 +27,13 @@ export default function App() {
           exit={{ opacity: 0, y: -12 }}
           transition={{ duration: 0.2, ease: "easeInOut" }}
         >
-          <Routes location={location}>
-            <Route path="/" element={<Home />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/devis" element={<Devis />} />
-          </Routes>
+          <Suspense fallback={<Fallback />}>
+            <Routes location={location}>
+              <Route path="/" element={<Home />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/devis" element={<Devis />} />
+            </Routes>
+          </Suspense>
         </motion.main>
       </AnimatePresence>
     </div>
